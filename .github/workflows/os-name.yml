@@ -1,0 +1,33 @@
+
+name: Check os.name
+ 
+on:
+  push:
+  workflow_dispatch:   # adds a "Run workflow" button in the Actions tab
+ 
+jobs:
+  run-java:
+    strategy:
+      fail-fast: false   # keep going on other OSes if one fails
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+ 
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+ 
+      - name: Install Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+ 
+      - name: Run program
+        shell: bash
+        run: java GetOSName.java   # change to your file's name/path
+ 
+      - name: Show OS properties reported by Java
+        shell: bash
+        run: java -XshowSettings:properties -version 2>&1 | grep -E 'os\.(name|version|arch)'
+ 
